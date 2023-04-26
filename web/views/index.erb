@@ -1,0 +1,30 @@
+<h1>Welcome to Scrum Poker</h1>
+
+<input type="text" placeholder="Username" id="username"/>
+<button onclick="register()">Sign in</button>
+<button onclick="flip()">Flip</button>
+
+<br/>
+<% %i[1 3 5 8 13 20].each do |value| %>
+	<button onclick="play(<%= value%>)"><%= value %></button>
+<%end%>
+
+<script type="text/javascript">
+var ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
+
+ws.onmessage = (msg) => alert(msg.data);
+
+function register() {
+const username = document.getElementById('username').value;
+
+	ws.send('register;' + username)
+}
+function flip() {
+	ws.send('flip');
+}
+
+function play(value) {
+	ws.send('play;' + value);
+}
+
+</script>
