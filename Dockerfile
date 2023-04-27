@@ -9,7 +9,7 @@ RUN bundle
 
 COPY . .
 
-ENTRYPOINT ["ruby", "web/app.rb"]
+ENTRYPOINT ["sh", "start.sh"]
 
 EXPOSE 8000
 

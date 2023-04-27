@@ -1,31 +1,32 @@
 require_relative '../app/poker'
 require_relative './context'
 require_relative './command_handler'
-require 'sinatra'
-require 'sinatra-websocket'
-
-set :server, 'thin'
-set :sockets, []
-set :port, 8000
-set :bind, '0.0.0.0'
+require 'faye/websocket'
+require 'rack'
 
 context = Web::Context.new
 
-get '/' do
-	unless request.websocket?
-		erb :index
-	else
-		request.websocket do |ws|
-			ws.onopen do
-				context.web_sockets << ws
-			end
-			ws.onmessage do |msg|
-				Web::CommandHandler.handle(msg, context, ws)
-			end
-			ws.onclose do
-				context.web_sockets.delete(ws)
-			end
-		end
-	end
+App = lambda do |env|
+  if Faye::WebSocket.websocket?(env)
+    ws = Faye::WebSocket.new(env)
+    context.web_sockets << ws
+
+    ws.on :message do |event|
+      ws.send(event.data)
+      Web::CommandHandler.handle(event.data, context, ws)
+    end
+
+    ws.on :close do |event|
+      context.web_sockets.delete(ws)
+      ws = nil
+    end
+
+    # Return async Rack response
+    ws.rack_response
+
+  else
+    # Normal HTTP request
+    [200, {}, ['Server up and running']]
+  end
 end
 
