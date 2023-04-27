@@ -43,6 +43,7 @@ module Web
 					prompt: @player&.current_game&.prompt
 				},
 				username: @player&.username,
+				type: 'stats'
 			}
 			@ws.send(JSON.dump(data))
 		end
@@ -54,7 +55,7 @@ module Web
 			raise "Game not found. Create or join first" if game.nil?
 			game.flip
 
-			send_message_to_players_of_same_game_as_this_player(game.results)
+			send_message_to_players_of_same_game_as_this_player({data: game.results, type: 'results'})
 		end
 
 		# bid;value

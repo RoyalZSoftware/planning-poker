@@ -12,7 +12,6 @@ App = lambda do |env|
     context.web_sockets << ws
 
     ws.on :message do |event|
-      ws.send(event.data)
       Web::CommandHandler.handle(event.data, context, ws)
     end
 
@@ -21,11 +20,8 @@ App = lambda do |env|
       ws = nil
     end
 
-    # Return async Rack response
     ws.rack_response
-
   else
-    # Normal HTTP request
     [200, {}, ['Server up and running']]
   end
 end

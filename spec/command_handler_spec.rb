@@ -40,6 +40,7 @@ describe "WSHandler" do
 		expect(JSON.load(ws_two.last)['current_game']['users'].length).to eql 2
 		expect(JSON.load(ws_two.last)['current_game']['state']).to eql 'picking'
 		expect(JSON.load(ws_two.last)['current_game']['id']).to eql 0
+		expect(JSON.load(ws_two.last)['type']).to eql 'stats'
 
 		Web::CommandHandler.handle('bid;5', context, ws)
 		Web::CommandHandler.handle('bid;5', context, ws_two)
@@ -49,7 +50,7 @@ describe "WSHandler" do
 
 		Web::CommandHandler.handle('flip', context, ws)
 
-		expected_game_result = JSON.dump([{name: 'Alex', value: 5}, {name: 'IJustDev', value: 5}])
+		expected_game_result = JSON.dump({data: [{name: 'Alex', value: 5}, {name: 'IJustDev', value: 5}], type: 'results'})
 
 		expect(ws.last).to eql expected_game_result
 		expect(ws_two.last).to eql expected_game_result
