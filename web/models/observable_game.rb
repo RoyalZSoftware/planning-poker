@@ -27,7 +27,6 @@ module Web
 
         def flip
             super
-            puts @state
             @state_changed.next(@state)
         end
 
