@@ -2,10 +2,12 @@ module Poker
 	class Game
 		attr_reader :players
 		attr_reader :state
+		attr_accessor :prompt
 
-		def initialize
+		def initialize(prompt = 'Set a card')
 			@players = []
 			@state = :picking
+			@prompt = prompt
 		end
 
 		def add_player(player)

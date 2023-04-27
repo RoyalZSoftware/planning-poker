@@ -1,11 +1,12 @@
 require_relative '../app/poker'
-require_relative './ws_handler'
+require_relative './context'
 require_relative './command_handler'
 require 'sinatra'
 require 'sinatra-websocket'
 
 set :server, 'thin'
 set :sockets, []
+set :port, 80
 
 context = Web::Context.new
 
@@ -15,13 +16,13 @@ get '/' do
 	else
 		request.websocket do |ws|
 			ws.onopen do
-				context.sockets << ws
+				context.web_sockets << ws
 			end
 			ws.onmessage do |msg|
-				CommandHandler.handle(msg, context, ws)
+				Web::CommandHandler.handle(msg, context, ws)
 			end
 			ws.onclose do
-				context.sockets.delete(ws)
+				context.web_sockets.delete(ws)
 			end
 		end
 	end

@@ -1,4 +1,3 @@
-require_relative '../web/ws_handler'
 require_relative '../web/context'
 require_relative '../web/command_handler'
 
@@ -40,6 +39,7 @@ describe "WSHandler" do
 		Web::CommandHandler.handle('stats', context, ws_two)
 		expect(JSON.load(ws_two.last)['current_game']['users'].length).to eql 2
 		expect(JSON.load(ws_two.last)['current_game']['state']).to eql 'picking'
+		expect(JSON.load(ws_two.last)['current_game']['id']).to eql 0
 
 		Web::CommandHandler.handle('bid;5', context, ws)
 		Web::CommandHandler.handle('bid;5', context, ws_two)
@@ -53,6 +53,10 @@ describe "WSHandler" do
 
 		expect(ws.last).to eql expected_game_result
 		expect(ws_two.last).to eql expected_game_result
+
+		Web::CommandHandler.handle('set_prompt;Ticket-69', context, ws)
+		expect(JSON.load(ws.last)).to eql 'new_prompt;Ticket-69'
+		expect(JSON.load(ws_two.last)).to eql 'new_prompt;Ticket-69'
 	end
 
 	it "Handle Stats works" do

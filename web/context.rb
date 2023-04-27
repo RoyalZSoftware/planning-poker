@@ -5,6 +5,7 @@ module Web
 			@players = {}
 			@games = []
 			@web_sockets = []
+			@history = {}
 		end
 
 		def create_game_in_behalf_of(player)
@@ -16,6 +17,9 @@ module Web
 
 		def find_game(id)
 			@games[id]
+		end
+		def find_history_for_game(id)
+			@history[id]
 		end
 	end
 end
