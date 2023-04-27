@@ -6,7 +6,8 @@ require 'sinatra-websocket'
 
 set :server, 'thin'
 set :sockets, []
-set :port, 80
+set :port, 8000
+set :bind, '0.0.0.0'
 
 context = Web::Context.new
 

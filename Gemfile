@@ -11,3 +11,7 @@ gem "rspec", "~> 3.12"
 gem "sinatra", "~> 3.0"
 
 gem "sinatra-websocket", "~> 0.3.1"
+
+gem "eventmachine"
+
+gem "thin"

@@ -1,4 +1,4 @@
-FROM ruby:2.6.10-alpine3.15
+FROM ruby:2.6.10
 
 WORKDIR /app
 
@@ -7,9 +7,9 @@ COPY Gemfile.lock .
 
 RUN bundle
 
-COPY .
+COPY . .
 
 ENTRYPOINT ["ruby", "web/app.rb"]
 
-EXPOSE 4568
+EXPOSE 8000
 
