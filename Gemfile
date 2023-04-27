@@ -10,5 +10,6 @@ gem "rspec", "~> 3.12"
 
 gem 'thin'
 gem 'faye-websocket'
+gem "sinatra"
 
 gem "rack", "~> 2.2"

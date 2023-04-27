@@ -2,7 +2,7 @@ module Poker
 	class Game
 		attr_reader :players
 		attr_reader :state
-		attr_accessor :prompt
+		attr_reader :prompt
 
 		def initialize(prompt = 'Set a card')
 			@players = []
@@ -15,12 +15,17 @@ module Poker
 			player.current_game = self
 		end
 
+		def remove_player(player)
+			@players.delete(player)
+		end
+
 		def flip
 			@state = :results
 		end
 		
-		def reset
-			@state = :picking if @state == :results
+		def prompt=(prompt)
+			@prompt = prompt
+			@state = :picking
 		end
 		
 		def results

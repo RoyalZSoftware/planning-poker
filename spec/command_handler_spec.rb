@@ -1,5 +1,18 @@
 require_relative '../web/context'
 require_relative '../web/command_handler'
+require_relative '../web/router'
+
+module Web
+class FakeRequest
+	attr_reader :params
+	attr_reader :headers
+	alias :POST :params
+
+	def initialize(params, headers={})
+		@params = params
+		@headers = headers
+	end
+end
 
 class MockWs
 	attr_accessor :received
@@ -8,7 +21,7 @@ class MockWs
 	end
 
 	def send(msg)
-		@received << msg
+		@received.push msg
 	end
 
 	def last
@@ -18,53 +31,76 @@ end
 
 describe "WSHandler" do
 	it "Registering works" do
-		context = Web::Context.new
-		
+		context = Context.new
 		ws = MockWs.new
 		
 		expect(context.players.length).to eql 0
-		Web::CommandHandler.handle('register;Alex', context, ws)
+
+		result = PlayerController.new(context, FakeRequest.new({username: 'Alex'})).register
+		id = JSON.load(result[2])["id"]
 		expect(context.players.length).to eql 1
 
-		Web::CommandHandler.handle('stats', context, ws)
-		expect(JSON.load(ws.last)["username"]).to eql "Alex"
-		
-		Web::CommandHandler.handle('create', context, ws)
-		expect(JSON.load(ws.last)).to eql 0
-		
-		ws_two = MockWs.new
-		
-		Web::CommandHandler.handle('register;IJustDev', context, ws_two)
-		Web::CommandHandler.handle('join;0', context, ws_two)
-		Web::CommandHandler.handle('stats', context, ws_two)
-		expect(JSON.load(ws_two.last)['current_game']['users'].length).to eql 2
-		expect(JSON.load(ws_two.last)['current_game']['state']).to eql 'picking'
-		expect(JSON.load(ws_two.last)['current_game']['id']).to eql 0
-		expect(JSON.load(ws_two.last)['type']).to eql 'stats'
+	end
+	it "Registering a game without user header won't work" do
+		context = Context.new
+		expect {
+			result = GameController.new(context, FakeRequest.new({})).create
+		}.to raise_error
+end
+it "Registering a game when logged in will work" do
+	context = Context.new
+	player = ObservablePlayer.new('testuser')
+	context.register_player(player)
+	game = nil
+	
+	expect {
+		result = GameController.new(context, FakeRequest.new({}, {'X-Poker-Playerid' => player.id})).create
+		game = context.games[0]
+	}.not_to raise_error
 
-		Web::CommandHandler.handle('bid;5', context, ws)
-		Web::CommandHandler.handle('bid;5', context, ws_two)
+	ws = MockWs.new
+	context.web_sockets << ws
 
-		context.web_sockets << ws
-		context.web_sockets << ws_two
+	expect(player.web_socket).to eql nil
 
-		Web::CommandHandler.handle('flip', context, ws)
+	CommandHandler.handle('register;' + player.id, context, ws)
 
-		expected_game_result = JSON.dump({data: [{name: 'Alex', value: 5}, {name: 'IJustDev', value: 5}], type: 'results'})
+	expect(player.web_socket).to eql ws
 
-		expect(ws.last).to eql expected_game_result
-		expect(ws_two.last).to eql expected_game_result
+	player_two = ObservablePlayer.new('testplayer2')
+	context.register_player(player_two)
 
-		Web::CommandHandler.handle('set_prompt;Ticket-69', context, ws)
-		expect(JSON.load(ws.last)).to eql 'new_prompt;Ticket-69'
-		expect(JSON.load(ws_two.last)).to eql 'new_prompt;Ticket-69'
+	ws_two = MockWs.new
+	context.web_sockets << ws_two
+	CommandHandler.handle('register;' + player_two.id, context, ws_two)
+
+	expect(player.current_game.players.length).to eql 1
+
+	GameController.new(context, FakeRequest.new({game_id: game.id}, {'X-Poker-Playerid' => player_two.id})).join
+	
+	expect(JSON.load(ws.last)['type']).to eql 'player_joined'
+	expect(player.current_game.players.length).to eql 2
+
+	GameController.new(context, FakeRequest.new({prompt: 'Ticket-1'}, {'X-Poker-Playerid' => player.id})).change_prompt
+	expect(JSON.load(ws.last)['type']).to eql 'prompt_changed'
+	expect(JSON.load(ws.last)['prompt']).to eql 'Ticket-1'
+
+	GameController.new(context, FakeRequest.new({}, {'X-Poker-Playerid' => player.id})).flip
+	expect(JSON.load(ws.last)['type']).to eql 'state_changed'
+	expect(JSON.load(ws.last)['state']).to eql 'results'
+
+	context.remove_player_by_ws(ws_two)
+	expect(JSON.load(ws.last)['type']).to eql 'player_left'
+	expect(player.current_game.players.length).to eql 1
 	end
 
 	it "Handle Stats works" do
-		context = Web::Context.new
+		context = Context.new
 		
 		ws = MockWs.new
 		
-		Web::CommandHandler.handle('stats', context, ws)
+		CommandHandler.handle('stats', context, ws)
 	end
+end
+
 end
