@@ -9,7 +9,7 @@ module Web
         end
 
         def route!
-            return [200, {'Access-Control-Allow-Origin': '*'}, ""] if @request.options?
+            return [200, {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'}, ""] if @request.options?
             begin
             post '/register' do
                 return PlayerController.new(@context, @request).register
