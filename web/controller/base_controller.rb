@@ -22,7 +22,7 @@ module Web
         protected
 
         def ok(data = nil)
-            [200, {ContentType: 'application/json'}, JSON.dump(data)]
+            [200, {ContentType: 'application/json', 'Access-Control-Allow-Origin': '*'}, JSON.dump(data)]
         end
     end
 end
