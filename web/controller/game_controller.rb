@@ -42,7 +42,9 @@ module Web
             set_game
             results = @game.state == :results ? @game.results : []
             dto = {
-                players: @game.players.map(&:username),
+                players: @game.players.map do |player|
+                    {id: player.id, name: player.username}
+                end,
                 state: @game.state,
                 id: @game.id,
                 prompt: @game.prompt,
