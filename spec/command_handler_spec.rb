@@ -63,7 +63,7 @@ it "Registering a game when logged in will work" do
 
 	expect(player.web_socket).to eql nil
 
-	CommandHandler.handle('register;' + player.id, context, ws)
+	CommandHandler.new('register;' + player.id, context, ws).handle
 
 	expect(player.web_socket).to eql ws
 
@@ -72,7 +72,7 @@ it "Registering a game when logged in will work" do
 
 	ws_two = MockWs.new
 	context.web_sockets << ws_two
-	CommandHandler.handle('register;' + player_two.id, context, ws_two)
+	CommandHandler.new('register;' + player_two.id, context, ws_two).handle
 
 	expect(player.current_game.players.length).to eql 1
 
@@ -95,7 +95,7 @@ it "Registering a game when logged in will work" do
 		
 		ws = MockWs.new
 		
-		CommandHandler.handle('stats', context, ws)
+		CommandHandler.new('stats', context, ws).handle
 	end
 end
 

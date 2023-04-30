@@ -3,8 +3,8 @@ module Web
         def create
             set_player
             game = Poker::Game.new
-            @context.add_game game
             game.add_player(@player)
+            @context.add_game game
             ok
         end
 
@@ -18,8 +18,7 @@ module Web
 
         def change_prompt
             set_game
-            prompt = params[:prompt]
-            @game.prompt = prompt
+            @game.prompt = params[:prompt]
             ok
         end
 
