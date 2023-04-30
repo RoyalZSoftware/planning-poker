@@ -49,7 +49,7 @@ describe "WSHandler" do
 end
 it "Registering a game when logged in will work" do
 	context = Context.new
-	player = ObservablePlayer.new('testuser')
+	player = PlayerWithWs.new('testuser')
 	context.register_player(player)
 	game = nil
 	
@@ -67,7 +67,7 @@ it "Registering a game when logged in will work" do
 
 	expect(player.web_socket).to eql ws
 
-	player_two = ObservablePlayer.new('testplayer2')
+	player_two = PlayerWithWs.new('testplayer2')
 	context.register_player(player_two)
 
 	ws_two = MockWs.new
@@ -78,20 +78,16 @@ it "Registering a game when logged in will work" do
 
 	GameController.new(context, FakeRequest.new({game_id: game.id}, {'X-Poker-Playerid' => player_two.id})).join
 	
-	expect(JSON.load(ws.last)['type']).to eql 'player_joined'
+	expect(JSON.load(ws.last)['type']).to eql 'game_changed'
 	expect(player.current_game.players.length).to eql 2
 
 	GameController.new(context, FakeRequest.new({prompt: 'Ticket-1'}, {'X-Poker-Playerid' => player.id})).change_prompt
-	expect(JSON.load(ws.last)['type']).to eql 'prompt_changed'
-	expect(JSON.load(ws.last)['prompt']).to eql 'Ticket-1'
 
 	GameController.new(context, FakeRequest.new({}, {'X-Poker-Playerid' => player.id})).flip
-	expect(JSON.load(ws.last)['type']).to eql 'state_changed'
-	expect(JSON.load(ws.last)['state']).to eql 'results'
+	expect(JSON.load(ws.last)['type']).to eql 'game_changed'
 
 	context.remove_player_by_ws(ws_two)
-	expect(JSON.load(ws.last)['type']).to eql 'player_left'
-	expect(player.current_game.players.length).to eql 1
+	expect(JSON.load(ws.last)['type']).to eql 'game_changed'
 	end
 
 	it "Handle Stats works" do

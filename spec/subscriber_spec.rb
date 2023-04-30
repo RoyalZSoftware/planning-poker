@@ -1,8 +1,8 @@
-require_relative '../web/subject'
+require_relative '../app/utils/subject'
 
 describe "Subscriber" do
     it "Example" do
-        subject = Web::Subject.new
+        subject = Poker::Subject.new
         x = 0
         
         subject.subscribe do |values|

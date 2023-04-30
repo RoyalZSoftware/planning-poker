@@ -8,40 +8,12 @@ module Web
 			@web_sockets = []
 		end
 
-		def make_game
-            game = ObservableGame.new(@context)
-
-			game.player_added.subscribe do |values|
+		def add_game(game)
+			game.changed.subscribe do |values|
 				player = values[0]
-				send_message_to_game_members({
-					type: 'player_joined',
-					username: player.username
-				}, game)
+				send_message_to_game_members({type: 'game_changed'}, game)
 			end
-			game.player_removed.subscribe do |values|
-				player = values[0]
-				send_message_to_game_members({
-					type: 'player_left',
-					username: player.username,
-				}, game)
-			end
-			game.prompt_changed.subscribe do |values|
-				prompt = values[0]
-				send_message_to_game_members({
-					type: 'prompt_changed',
-					prompt: prompt
-				}, game)
-			end
-			game.state_changed.subscribe do |values|
-				state = values[0]
-				send_message_to_game_members({
-					type: 'state_changed',
-					state: state
-				}, game)
-			end
-            @games.push game
-
-			game
+            @games << game
 		end
 
 		def find_player_by_id(id)

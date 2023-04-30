@@ -1,4 +1,4 @@
-module Web
+module Poker
     class Subject
         def initialize
             @observers = []

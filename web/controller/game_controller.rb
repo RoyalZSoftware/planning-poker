@@ -1,11 +1,10 @@
-require_relative '../models/observable_game'
-
 module Web
     class GameController < BaseController
         def create
             set_player
-            game = @context.make_game
-            game.add_player @player
+            game = Poker::Game.new
+            @context.add_game game
+            game.add_player(@player)
             ok
         end
 

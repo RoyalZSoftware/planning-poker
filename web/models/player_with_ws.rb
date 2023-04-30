@@ -1,8 +1,7 @@
 require_relative './base_model'
 
 module Web
-    class ObservablePlayer < Poker::Player
-        include BaseModel
+    class PlayerWithWs < Poker::Player
         attr_accessor :web_socket
     end
 end

@@ -1,5 +1,5 @@
 require_relative './base_controller'
-require_relative '../models/observable_player'
+require_relative '../models/player_with_ws'
 
 module Web
     class PlayerController < BaseController
@@ -7,7 +7,7 @@ module Web
             username = params[:username]
             raise "No username provided" if username.nil?
 
-            player = ObservablePlayer.new(username)
+            player = PlayerWithWs.new(username)
             @context.register_player(player)
             ok({
                 id: player.id,
