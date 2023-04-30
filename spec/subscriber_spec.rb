@@ -1,4 +1,4 @@
-require_relative '../app/utils/subject'
+require_relative '../app/subject'
 
 describe "Subscriber" do
     it "Example" do

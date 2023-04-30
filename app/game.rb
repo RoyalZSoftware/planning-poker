@@ -1,10 +1,6 @@
 module Poker
 	class Game
-		attr_reader :id
-		attr_reader :players
-		attr_reader :state
-		attr_reader :prompt
-		attr_reader :changed
+		attr_reader :id, :players, :state, :prompt, :changed
 
 		def initialize(prompt = 'Set a card')
 			@id = SecureRandom.hex

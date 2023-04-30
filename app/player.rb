@@ -1,8 +1,8 @@
+require 'securerandom'
+
 module Poker
 	class Player
-		attr_reader :id
-		attr_reader :username
-		attr_reader :bid
+		attr_reader :id, :username, :bid
 		attr_accessor :current_game
 
 		def initialize(username)
