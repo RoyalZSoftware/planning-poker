@@ -30,7 +30,7 @@ module Web
 							@player.bid = value
 							ok
 						rescue => ex
-							bad_request(ex)
+							bad_request(ex.message)
 						end
         end
 
@@ -42,7 +42,7 @@ module Web
 
         def stats
             set_game
-            results = @game.state == :results ? @game.results : []
+            results = @game.results(@player)
             dto = {
                 players: @game.players.map do |player|
                     {id: player.id, name: player.username}

@@ -19,7 +19,7 @@ App = lambda do |env|
     context.web_sockets << ws
 
     ws.on :message do |event|
-      Web::CommandHandler.handle(event.data, context, ws)
+      Web::CommandHandler.new(event.data, context, ws).handle
     end
 
     ws.on :close do |event|
