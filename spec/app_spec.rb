@@ -6,13 +6,18 @@ describe "App" do
 		p_two = Poker::Player.new("PlayerTwo")
 
 		game = Poker::Game.new
-		game.add_player(p_one)
-		game.add_player(p_two)
+		p_one.join(game)
+		p_two.join(game)
 
-		p_one.bid = Poker::Bid.new(1)
-		p_two.bid = Poker::Bid.new(8)
+		p_one.bid = 1
+		p_two.bid = 8
 		
 		game.flip
-		game.results
+		results = game.results
+		expect(results[0][:name]).to eql "PlayerOne"
+		expect(results[0][:value]).to eql 1
   end
+	it 'Results contain average' do
+		
+	end
 end

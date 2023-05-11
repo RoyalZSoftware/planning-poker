@@ -3,7 +3,7 @@ module Web
         def create
             set_player
             game = Poker::Game.new
-            game.add_player(@player)
+						@player.join(game)
             @context.add_game game
             ok
         end
@@ -12,7 +12,7 @@ module Web
             set_player
             game = @context.find_game_by_id(params[:game_id])
 
-            game.add_player @player
+						@player.join(game)
             ok
         end
 
@@ -26,8 +26,12 @@ module Web
             value = params[:value]
             set_player
 
-            @player.bid = Poker::Bid.new(value)
-            ok
+						begin
+							@player.bid = value
+							ok
+						rescue => ex
+							bad_request(ex)
+						end
         end
 
         def flip
@@ -43,6 +47,7 @@ module Web
                 players: @game.players.map do |player|
                     {id: player.id, name: player.username}
                 end,
+								allowed_bids: @game.allowed_bids,
                 state: @game.state,
                 id: @game.id,
                 prompt: @game.prompt,

@@ -24,5 +24,8 @@ module Web
         def ok(data = nil)
             [200, {ContentType: 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'}, JSON.dump(data)]
         end
+        def bad_request(data = nil)
+            [400, {ContentType: 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'}, JSON.dump(data)]
+        end
     end
 end
