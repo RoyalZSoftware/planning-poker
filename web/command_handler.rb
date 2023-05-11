@@ -11,6 +11,7 @@ module Web
 		def handle
 			begin
 				handle_register if @msg.start_with? 'register;'
+				handle_ping if @msg == 'ping'
 			rescue => ex
 				@ws.send(JSON.dump(ex))
 			end
@@ -23,6 +24,10 @@ module Web
 			player_id = @msg.split(';')[1]
 			player = @context.find_player_by_id(player_id)
 			player.web_socket = @ws
+		end
+
+		def handle_ping
+			@ws.send('pong')
 		end
 	end
 end

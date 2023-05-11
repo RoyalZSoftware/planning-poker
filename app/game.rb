@@ -1,3 +1,5 @@
+require_relative './subject'
+
 module Poker
 	class Game
 		attr_reader :id, :players, :state, :prompt, :changed
