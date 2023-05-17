@@ -49,9 +49,9 @@ module Poker
 		def results(cur_player=nil)
 			@player_bids.map do |player, bid|
 				if player == cur_player
-					{name: player.username, value: bid&.value}
+					{id: player.id, name: player.username, value: bid&.value}
 				else
-					{name: player.username, value: @state == :results ? bid&.value: nil}
+					{id: player.id, name: player.username, value: @state == :results ? bid&.value: nil}
 				end
 			end
 		end
