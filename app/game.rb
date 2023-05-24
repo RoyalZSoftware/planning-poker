@@ -43,6 +43,7 @@ module Poker
 		def prompt=(prompt)
 			@prompt = prompt
 			@state = :picking
+			@player_bids = {}
 			notify_observers
 		end
 		
